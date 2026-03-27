@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Access | Grow Orgo🌿</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #1b7a4b; 
+            --primary-glow: rgba(27, 122, 75, 0.4);
+            --bg: #050605; 
+            --glass: rgba(15, 17, 15, 0.8);
+            --border: rgba(255, 255, 255, 0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background-color: var(--bg); 
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(27, 122, 75, 0.08) 0%, transparent 35%),
+                radial-gradient(circle at 90% 90%, rgba(27, 122, 75, 0.08) 0%, transparent 35%);
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden;
+        }
+
+        .auth-container {
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            padding: 60px 45px;
+            border-radius: 45px;
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.9);
+            position: relative;
+            z-index: 10;
+        }
+
+        .brand-logo {
+            font-family: 'Outfit';
+            font-size: 42px;
+            color: var(--primary);
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 5px;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+        }
+
+        .auth-subtitle {
+            font-family: 'Outfit';
+            color: #444;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 45px;
+            font-weight: 800;
+        }
+
+        .form-group { margin-bottom: 25px; text-align: left; }
+
+        .field-label {
+            font-size: 10px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            margin-left: 8px;
+            display: block;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i.field-icon {
+            position: absolute;
+            left: 20px;
+            color: #333;
+            font-size: 14px;
+            transition: 0.3s;
+            pointer-events: none;
+        }
+
+        .input-wrapper i.toggle-password {
+            position: absolute;
+            right: 20px;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .input-wrapper i.toggle-password:hover { color: var(--primary); }
+
+        input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #1c1c1c;
+            padding: 18px 20px 18px 50px;
+            border-radius: 20px;
+            color: #fff;
+            outline: none;
+            font-size: 15px;
+            transition: all 0.4s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(27, 122, 75, 0.1);
+            background: #000;
+        }
+
+        input:focus ~ i.field-icon { color: var(--primary); }
+
+        .btn-auth {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 800;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 30px rgba(27, 122, 75, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(27, 122, 75, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .error-box {
+            background: rgba(198, 40, 40, 0.1);
+            color: #ff5f5f;
+            padding: 15px;
+            border-radius: 18px;
+            font-size: 12px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(198, 40, 40, 0.2);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .exit-link {
+            margin-top: 40px;
+            display: inline-block;
+            color: #333;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .exit-link:hover { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="brand-logo">Grow Orgo🌿</div>
+    <div class="auth-subtitle">Command Terminal</div>
+
+    {% if error %}
+    <div class="error-box">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <form method="POST">
+        <div class="form-group">
+            <label class="field-label">Identity</label>
+            <div class="input-wrapper">
+                <input type="text" name="username" placeholder="Admin Username" required autocomplete="off">
+                <i class="fa-solid fa-user-shield field-icon"></i>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="field-label">Access Key</label>
+            <div class="input-wrapper">
+                <input type="password" name="password" id="passwordInput" placeholder="••••••••" required>
+                <i class="fa-solid fa-key field-icon"></i>
+                <i class="fa-solid fa-eye-slash toggle-password" id="togglePassword"></i>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-auth">
+            <span>Authenticate</span>
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </form>
+
+    <a href="/" class="exit-link">Return to Public Portal</a>
+</div>
+
+<script>
+    // THE PASSWORD TOGGLE LOGIC
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#passwordInput');
+
+    togglePassword.addEventListener('click', function (e) {
+        // Toggle the type attribute
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        
+        // Toggle the icon
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
+</script>
+
+</body>
+</html>

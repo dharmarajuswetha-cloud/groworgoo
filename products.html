@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Shop | Grow Orgo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #1b7a4b; --bg-dark: #121412; --bg-card: #1c1f1c; --gold: #ffcc00; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-dark); color: #e0e0e0; }
+
+        header { position: sticky; top: 0; background: rgba(18, 20, 18, 0.95); backdrop-filter: blur(12px); padding: 15px 8%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .logo { font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 900; color: var(--primary); text-decoration: none; }
+        .profile-circle { background: var(--bg-card); color: var(--primary); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid var(--primary); margin-left: 96px; cursor: pointer; }
+
+        .tools-container { padding: 40px 8% 10px 8%; display: flex; justify-content: center; }
+        .search-box { width: 100%; max-width: 600px; }
+        .search-box input { width: 100%; padding: 16px 30px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); background: var(--bg-card); color: white; outline: none; text-align: center; }
+
+        .filter-bar { display: flex; justify-content: center; gap: 12px; padding: 20px 8% 40px 8%; flex-wrap: wrap; }
+        .filter-btn { background: var(--bg-card); color: #bbb; border: 1px solid rgba(255,255,255,0.05); padding: 10px 22px; border-radius: 50px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .filter-btn.active { background: var(--primary); color: white; }
+
+        .shop-section { padding: 0 8% 100px 8%; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: var(--bg-card); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); display: flex; flex-direction: column; transition: 0.4s; }
+        .card:hover { transform: translateY(-10px); border-color: var(--primary); }
+        .card-img-fixed { width: 100%; height: 200px; background-size: cover; background-position: center; cursor: zoom-in; }
+        
+        .card-content { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+        .rating { font-size: 13px; margin-bottom: 8px; }
+        .price { font-weight: 800; font-size: 22px; color: #fff; }
+        .buy-btn { background: var(--primary); color: white; padding: 10px 22px; border-radius: 12px; font-weight: 700; text-decoration: none; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--bg-card); max-width: 950px; width: 95%; height: 85vh; border-radius: 30px; display: flex; overflow: hidden; position: relative; border: 1px solid #333; }
+        .modal-left { flex: 1; border-right: 1px solid #333; display: flex; flex-direction: column; }
+        .modal-right { flex: 1.2; padding: 40px; overflow-y: auto; background: #1a1d1a; }
+        .close-modal { position: absolute; top: 15px; right: 25px; color: white; cursor: pointer; font-size: 35px; z-index: 100; }
+        
+        .star-input span { font-size: 32px; color: #333; cursor: pointer; transition: 0.2s; }
+        .star-input span.active { color: var(--gold); }
+        .custom-file { display: block; padding: 15px; background: #000; border: 1px dashed #444; border-radius: 12px; text-align: center; margin: 15px 0; cursor: pointer; color: #888; font-size: 13px; }
+        .customer-review-tile { background: #121412; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #222; }
+        .review-img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<header>
+    <a href="/" class="logo">Grow Orgo🌿</a>
+    <nav style="display:flex; align-items:center;">
+        <a href="/" style="color:#bbb; text-decoration:none; margin-left:30px; font-weight:600;">Home</a>
+        <a href="/products" style="color:#fff; text-decoration:none; margin-left:30px; font-weight:600;">Shop</a>
+        
+        <a href="/orders" style="color:#bbb; text-decoration:none; margin-left:30px; font-weight:600;">
+            <i class="fa-solid fa-bag-shopping" style="margin-right: 5px; font-size: 12px; color: var(--primary);"></i> My Orders
+        </a>
+
+        {% if user %}
+            <div class="profile-circle" onclick="window.location.href='/orders'" title="View Profile & Orders">
+                {{ user[0]|upper }}
+            </div>
+        {% endif %}
+    </nav>
+</header>
+
+<div class="tools-container">
+    <div class="search-box"><input type="text" id="searchInput" placeholder="Search our premium harvest..."></div>
+</div>
+
+<div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">All Harvest</button>
+    <button class="filter-btn" data-filter="grains">Grains</button>
+    <button class="filter-btn" data-filter="dairy">Dairy</button>
+    <button class="filter-btn" data-filter="fresh harvest">Fresh Harvest</button>
+</div>
+
+<section class="shop-section">
+    <div class="product-grid" id="productGrid">
+        {% for product in products %}
+        <div class="card" data-category="{{ product.category }}" data-name="{{ product.name|lower }}">
+            <div class="card-img-fixed" style="background-image: url('{{ product.image }}');" 
+                 onclick="openQuickView('{{ product.id }}', '{{ product.name }}', '{{ product.description }}', '{{ product.image }}', '{{ product.price }}')"></div>
+            <div class="card-content">
+                <div class="rating">
+                    {% for i in range(avg_ratings[product.id].int_score) %}<span style="color:var(--gold);">★</span>{% endfor %}
+                    {% for i in range(5 - avg_ratings[product.id].int_score) %}<span style="color:#333;">★</span>{% endfor %}
+                    <span style="color:#666; font-size:11px; margin-left:5px;">{{ avg_ratings[product.id].score }}</span>
+                </div>
+                <h3>{{ product.name }}</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:15px; border-top:1px solid rgba(255,255,255,0.05);">
+                    <span class="price">₹ {{ product.price }}</span>
+                    <a href="/order_page/{{ product.id }}" class="buy-btn">BUY NOW</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<div class="modal" id="quickView">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeQuickView()">&times;</span>
+        <div class="modal-left">
+            <div id="modalImg" style="width:100%; height:350px; background-size:cover; background-position:center;"></div>
+            <div style="padding:40px;">
+                <h2 id="modalTitle" style="color:white; font-size:32px;"></h2>
+                <p id="modalDesc" style="color:#888; margin-top:10px; line-height:1.6;"></p>
+                <h3 id="modalPrice" style="color:var(--primary); font-size:36px; font-weight:900; margin-top:20px;"></h3>
+            </div>
+        </div>
+        <div class="modal-right">
+            <div style="background:rgba(255,255,255,0.03); padding:25px; border-radius:20px; border: 1px solid #333;">
+                <form action="/submit_review" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="product_id" id="modalProdId">
+                    <div class="star-input" id="starInput">
+                        <span data-v="1" class="active">★</span><span data-v="2" class="active">★</span><span data-v="3" class="active">★</span><span data-v="4" class="active">★</span><span data-v="5" class="active">★</span>
+                    </div>
+                    <input type="hidden" name="rating" id="ratingInput" value="5">
+                    <textarea name="comment" placeholder="How was the quality?" required style="width:100%; background:#000; border:1px solid #333; color:white; padding:15px; border-radius:12px; height:90px; outline:none; resize:none;"></textarea>
+                    <label for="rev_img" class="custom-file">📸 Upload Product Photo</label>
+                    <input type="file" id="rev_img" name="review_image" style="display:none;" onchange="updateFileName(this)">
+                    <p id="fileLabel" style="font-size:11px; color:var(--primary); text-align:center; margin-bottom:15px;"></p>
+                    <button type="submit" style="width:100%; background:var(--primary); color:white; border:none; padding:15px; border-radius:50px; font-weight:900; cursor:pointer;">POST REVIEW</button>
+                </form>
+            </div>
+            <div id="dynamicReviews" style="margin-top:40px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const allReviews = {{ reviews|tojson }};
+    const searchInput = document.getElementById('searchInput');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.card');
+
+    function updateFileName(input) { document.getElementById('fileLabel').innerText = input.files.length > 0 ? "Selected: " + input.files[0].name : ""; }
+
+    function openQuickView(id, title, desc, img, price) {
+        document.getElementById('modalProdId').value = id;
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalDesc').innerText = desc;
+        document.getElementById('modalImg').style.backgroundImage = `url('${img}')`;
+        document.getElementById('modalPrice').innerText = `₹ ${price}`;
+        
+        const filtered = allReviews.filter(r => r.product_id == id);
+        const container = document.getElementById('dynamicReviews');
+        container.innerHTML = filtered.length ? '' : '<p style="color:#444; text-align:center;">No feedback yet.</p>';
+        filtered.forEach(rev => {
+            let s = ''; for(let i=1; i<=5; i++) s += `<span style="color:${i<=rev.rating ? 'var(--gold)':'#333'};">★</span>`;
+            container.innerHTML += `<div class="customer-review-tile">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong style="color:white;">${rev.username}</strong><div>${s}</div></div>
+                <p style="color:#aaa; font-size:14px;">${rev.comment}</p>
+                ${rev.image_path ? `<img src="${rev.image_path}" class="review-img">` : ''}
+            </div>`;
+        });
+        document.getElementById('quickView').style.display = 'flex';
+    }
+
+    function closeQuickView() { document.getElementById('quickView').style.display = 'none'; }
+
+    function performFilter() {
+        const term = searchInput.value.toLowerCase();
+        const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+        const grid = document.querySelectorAll('.card');
+        grid.forEach(card => {
+            const matchesSearch = card.dataset.name.includes(term);
+            const matchesFilter = (activeFilter === 'all' || card.dataset.category.includes(activeFilter) || (activeFilter === 'dairy' && (card.dataset.name.includes('milk') || card.dataset.name.includes('paneer'))));
+            card.style.display = (matchesSearch && matchesFilter) ? 'flex' : 'none';
+        });
+    }
+
+    searchInput.addEventListener('input', performFilter);
+    filterButtons.forEach(btn => btn.onclick = () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        performFilter();
+    });
+
+    const stars = document.querySelectorAll('#starInput span');
+    stars.forEach(s => { s.onclick = () => {
+        const val = s.dataset.v; document.getElementById('ratingInput').value = val;
+        stars.forEach(st => st.classList.toggle('active', st.dataset.v <= val));
+    };});
+</script>
+</body>
+</html>

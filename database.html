@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Raw Database Explorer | Grow Orgo🌿</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0a0c0a; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; padding: 50px; }
+        .back-btn { color: #1b7a4b; text-decoration: none; font-weight: 800; display: block; margin-bottom: 30px; border: 1px solid #1b7a4b; width: fit-content; padding: 10px 20px; border-radius: 50px; }
+        .table-wrap { background: #141614; padding: 30px; border-radius: 20px; border: 1px solid #222; margin-bottom: 50px; }
+        h2 { border-left: 4px solid #1b7a4b; padding-left: 15px; margin-bottom: 20px; font-size: 20px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: #555; padding: 15px; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #222; }
+        td { padding: 15px; border-bottom: 1px solid #1c1c1c; font-size: 13px; color: #ccc; }
+        img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 1px solid #333; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+    </style>
+</head>
+<body>
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <h1 style="font-size: 24px;">Grow Orgo System Database</h1>
+        <a href="/dashboard" class="back-btn">← Back to Command Center</a>
+    </header>
+    
+    <div class="table-wrap">
+        <h2>👥 REGISTERED USERS</h2>
+        <table>
+            <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Password</th></tr></thead>
+            <tbody>
+                {% for u in users %}
+                <tr><td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td><td>{{ u.password }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-wrap">
+        <h2>🧺 PRODUCT CATALOG</h2>
+        <table>
+            <thead><tr><th>ID</th><th>Name</th><th>Category</th><th>Price</th><th>Image URL</th></tr></thead>
+            <tbody>
+                {% for p in products %}
+                <tr>
+                    <td>{{ p.id }}</td><td>{{ p.name }}</td><td>{{ p.category }}</td><td>₹{{ p.price }}</td>
+                    <td><div style="font-size: 10px; color: #444; max-width: 200px; overflow: hidden;">{{ p.image }}</div></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-wrap">
+        <h2>🚚 MASTER ORDERS LIST</h2>
+        <table>
+            <thead><tr><th>ID</th><th>User Email</th><th>Product</th><th>Customer</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for o in orders %}
+                <tr>
+                    <td>#{{ o.id }}</td><td>{{ o.user_email }}</td><td>{{ o.product_name }}</td>
+                    <td>{{ o.customer_name }}<br><small>{{ o.phone }}</small></td>
+                    <td><strong style="color: #1b7a4b;">{{ o.status }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-wrap">
+        <h2>💬 CUSTOMER REVIEWS & IMAGES</h2>
+        <table>
+            <thead><tr><th>ID</th><th>Product ID</th><th>User</th><th>Rating</th><th>Comment</th><th>Review Image</th></tr></thead>
+            <tbody>
+                {% for r in reviews %}
+                <tr>
+                    <td>{{ r.id }}</td><td>#{{ r.product_id }}</td><td>{{ r.username }}</td>
+                    <td style="color: #ffcc00;">{{ r.rating }} ★</td><td>{{ r.comment }}</td>
+                    <td>
+                        {% if r.image_path %}
+                            <img src="{{ r.image_path }}" alt="Review Image">
+                        {% else %}
+                            <span style="color: #444;">No Image</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

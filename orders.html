@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | Grow Orgo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #1b7a4b; --bg-dark: #121412; --bg-card: #1c1f1c; --gold: #ffcc00; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-dark); color: #e0e0e0; line-height: 1.6; }
+
+        header { 
+            position: sticky; top: 0; background: rgba(18, 20, 18, 0.8); backdrop-filter: blur(20px);
+            padding: 15px 8%; display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .logo { font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 900; color: var(--primary); text-decoration: none; }
+        nav a { text-decoration: none; color: #888; margin-left: 30px; font-weight: 600; font-size: 14px; transition: 0.3s; }
+        nav a:hover { color: var(--primary); }
+
+        .container { padding: 60px 8%; max-width: 1100px; margin: 0 auto; min-height: 85vh; }
+        h1 { font-family: 'Outfit', sans-serif; font-size: 42px; color: #fff; margin-bottom: 40px; }
+
+        /* IMPROVED ORDER CARDS */
+        .order-card {
+            background: linear-gradient(145deg, #1c1f1c, #161816);
+            border-radius: 28px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.03);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .order-card:hover { 
+            transform: scale(1.02); 
+            border-color: var(--primary); 
+            box-shadow: 0 15px 40px rgba(27, 122, 75, 0.1); 
+        }
+
+        .order-img { 
+            width: 110px; height: 110px; border-radius: 20px; 
+            background-size: cover; background-position: center; 
+            border: 2px solid #222; flex-shrink: 0;
+        }
+
+        .order-info { flex: 1; }
+        .order-id { color: var(--primary); font-weight: 800; font-size: 11px; letter-spacing: 1.5px; margin-bottom: 5px; text-transform: uppercase; }
+        .order-info h3 { font-size: 22px; color: #fff; margin-bottom: 8px; font-family: 'Outfit'; }
+        .order-date { color: #666; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+
+        .order-action { text-align: right; min-width: 150px; }
+        
+        /* MODERN STATUS PILLS */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        .status-placed { background: rgba(33, 150, 243, 0.1); color: #2196f3; border: 1px solid rgba(33, 150, 243, 0.2); }
+        .status-delivered { background: rgba(27, 122, 75, 0.1); color: var(--primary); border: 1px solid rgba(27, 122, 75, 0.2); }
+
+        .price-text { font-weight: 900; color: #fff; font-size: 24px; margin-bottom: 15px; }
+        
+        .btn-details {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid #333;
+            transition: 0.3s;
+        }
+        .btn-details:hover { background: var(--primary); border-color: var(--primary); }
+
+        /* EMPTY STATE */
+        .empty-basket { text-align: center; padding: 100px 0; }
+        .empty-basket i { font-size: 80px; color: #222; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo">Grow Orgo🌿</a>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/products">Shop</a>
+        <a href="/orders" style="color: white;">My Orders</a>
+    </nav>
+</header>
+
+<div class="container">
+    <h1>Harvest Tracking</h1>
+    
+    {% if orders %}
+        {% for order in orders %}
+        <div class="order-card">
+            <div class="order-img" style="background-image: url('{{ order.product_image }}');"></div>
+            
+            <div class="order-info">
+                <span class="order-id">#GROW-{{ order.id }}</span>
+                <h3>{{ order.product_name }}</h3>
+                <div class="order-date">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    Confirmed on {{ order.order_date }}
+                </div>
+            </div>
+            
+            <div class="order-action">
+                <div class="status-badge {% if order.status == 'Delivered' %}status-delivered{% else %}status-placed{% endif %}">
+                    <i class="fa-solid fa-circle" style="font-size: 6px;"></i> {{ order.status }}
+                </div>
+                <div class="price-text">₹{{ order.product_price }}</div>
+                <a href="/order_details/{{ order.id }}" class="btn-details">View Receipt</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-basket">
+            <i class="fa-solid fa-seedling"></i>
+            <h2 style="color: #444;">No active harvests found.</h2>
+            <a href="/products" style="color: var(--primary); text-decoration: none; font-weight: 800; display: block; margin-top: 15px;">Explore the Shop</a>
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

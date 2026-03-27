@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Grow Orgo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #1b7a4b; --bg-dark: #121412; --bg-card: #1c1f1c; --text-light: #e0e0e0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); }
+
+        header { padding: 20px 8%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .logo { font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 900; color: var(--primary); text-decoration: none; }
+
+        .checkout-container { 
+            display: flex; gap: 50px; padding: 60px 8%; max-width: 1200px; margin: 0 auto; 
+            flex-wrap: wrap;
+        }
+
+        /* LEFT: PRODUCT SUMMARY */
+        .order-summary { flex: 1; min-width: 350px; background: var(--bg-card); padding: 30px; border-radius: 24px; border: 1px solid #222; height: fit-content; }
+        .summary-img { width: 100%; height: 250px; background-size: cover; background-position: center; border-radius: 15px; margin-bottom: 20px; }
+        .summary-details h2 { font-size: 28px; color: #fff; margin-bottom: 10px; }
+        .summary-details p { color: #888; font-size: 14px; line-height: 1.6; }
+        .summary-price { font-size: 32px; font-weight: 900; color: var(--primary); margin-top: 20px; display: block; }
+
+        /* RIGHT: SHIPPING FORM */
+        .shipping-form { flex: 1.2; min-width: 350px; }
+        .shipping-form h1 { font-family: 'Outfit', sans-serif; font-size: 36px; margin-bottom: 10px; }
+        .shipping-form p { color: #666; margin-bottom: 40px; }
+
+        .input-group { margin-bottom: 25px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 800; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .input-group input, .input-group textarea { 
+            width: 100%; padding: 16px; background: #000; border: 1px solid #333; 
+            color: #fff; border-radius: 12px; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--primary); }
+
+        .place-order-btn { 
+            width: 100%; background: var(--primary); color: white; border: none; 
+            padding: 20px; border-radius: 50px; font-weight: 900; font-size: 16px; 
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .place-order-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+        /* CONFIRMATION POPUP STYLES */
+        #confirmOverlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; 
+            justify-content: center; backdrop-filter: blur(8px);
+        }
+        .popup-card {
+            background: #1c1f1c; padding: 40px; border-radius: 30px; 
+            border: 1px solid var(--primary); text-align: center; 
+            max-width: 400px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo">Grow Orgo🌿</a>
+</header>
+
+<div class="checkout-container">
+    <div class="order-summary">
+        <div class="summary-img" style="background-image: url('{{ product.image }}');"></div>
+        <div class="summary-details">
+            <p style="text-transform: uppercase; font-size: 11px; letter-spacing: 2px; color: var(--primary); font-weight: 800; margin-bottom: 5px;">Your Selection</p>
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.description }}</p>
+            <span class="summary-price">₹ {{ product.price }}</span>
+        </div>
+    </div>
+
+    <div class="shipping-form">
+        <h1>Delivery Details</h1>
+        <p>Complete your harvest request below.</p>
+
+        <form id="orderForm" action="/place_order/{{ product.id }}" method="POST">
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" name="name" id="custName" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="input-group">
+                <label>Phone Number</label>
+                <input type="tel" name="phone" id="custPhone" placeholder="+91 XXXXX XXXXX" required>
+            </div>
+
+            <div class="input-group">
+                <label>Delivery Address</label>
+                <textarea name="address" id="custAddress" rows="4" placeholder="Street, Apartment, Landmark, City" required></textarea>
+            </div>
+
+            <button type="button" onclick="handleOrderClick()" class="place-order-btn">CONFIRM HARVEST ORDER</button>
+        </form>
+    </div>
+</div>
+
+<div id="confirmOverlay">
+    <div class="popup-card">
+        <div style="font-size: 50px; margin-bottom: 20px;">🚜</div>
+        <h2 style="font-family: 'Outfit'; color: white; margin-bottom: 10px;">Final Step</h2>
+        <p style="color: #888; font-size: 14px; margin-bottom: 30px;">
+            Place your order for <strong style="color: var(--primary);">{{ product.name }}</strong>? 
+            Details cannot be changed after confirmation.
+        </p>
+        
+        <div style="display: flex; gap: 15px;">
+            <button onclick="closePopup()" style="flex: 1; background: #222; color: white; border: 1px solid #333; padding: 15px; border-radius: 50px; font-weight: 700; cursor: pointer;">Edit Info</button>
+            <button onclick="finalSubmit()" style="flex: 1; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 700; cursor: pointer;">Confirm Now</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Checks if fields are empty, then shows popup
+    function handleOrderClick() {
+        const form = document.getElementById('orderForm');
+        if (form.checkValidity()) {
+            document.getElementById('confirmOverlay').style.display = 'flex';
+        } else {
+            form.reportValidity(); // Triggers built-in browser alerts for empty fields
+        }
+    }
+
+    // 2. Closes the popup
+    function closePopup() {
+        document.getElementById('confirmOverlay').style.display = 'none';
+    }
+
+    // 3. Submits the form to the backend
+    function finalSubmit() {
+        document.getElementById('orderForm').submit();
+    }
+</script>
+
+</body>
+</html>

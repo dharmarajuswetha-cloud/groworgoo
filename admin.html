@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grow Orgo | Admin Command Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #1b7a4b; --bg: #0a0c0a; --card: #141614; --border: rgba(255,255,255,0.05); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg); color: #e0e0e0; -webkit-font-smoothing: antialiased; }
+
+        header { 
+            background: rgba(20, 22, 20, 0.8); backdrop-filter: blur(15px); padding: 18px 8%; 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-family: 'Outfit'; font-size: 26px; color: var(--primary); text-decoration: none; font-weight: 900; letter-spacing: -1px; }
+
+        .container { padding: 40px 8%; max-width: 1500px; margin: 0 auto; }
+        
+        .section-box { 
+            background: var(--card); padding: 35px; border-radius: 32px; 
+            border: 1px solid var(--border); margin-bottom: 40px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: 0.3s;
+        }
+        .section-box:hover { border-color: rgba(27, 122, 75, 0.3); }
+        h2 { font-family: 'Outfit'; margin-bottom: 25px; color: #fff; font-size: 24px; display: flex; align-items: center; gap: 12px; }
+
+        /* Tables Modernization */
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        th { text-align: left; padding: 15px; color: #444; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        tr.data-row { background: rgba(255,255,255,0.01); transition: 0.2s; }
+        tr.data-row:hover { background: rgba(255,255,255,0.03); }
+        td { padding: 18px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); font-size: 14px; }
+        td:first-child { border-left: 1px solid var(--border); border-radius: 16px 0 0 16px; }
+        td:last-child { border-right: 1px solid var(--border); border-radius: 0 16px 16px 0; }
+
+        /* Form Controls */
+        input, select, textarea { 
+            background: #000; border: 1px solid #222; color: #fff; padding: 14px 18px; 
+            border-radius: 14px; outline: none; transition: 0.3s; font-size: 14px;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(27, 122, 75, 0.1); }
+
+        /* Buttons */
+        .btn { 
+            padding: 12px 24px; border-radius: 14px; border: none; cursor: pointer; 
+            font-weight: 800; font-size: 13px; transition: 0.3s; display: inline-flex; 
+            align-items: center; gap: 8px; justify-content: center;
+        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(27, 122, 75, 0.2); }
+        .btn-edit { background: #1c1c1c; color: #fff; border: 1px solid #333; }
+        .btn-danger { background: rgba(198, 40, 40, 0.1); color: #c62828; border: 1px solid rgba(198, 40, 40, 0.15); }
+        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        .thumb { width: 60px; height: 60px; border-radius: 16px; object-fit: cover; border: 1px solid #222; }
+        .category-tag { background: rgba(27, 122, 75, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+
+        /* Header UI Buttons */
+        .header-actions { display: flex; gap: 12px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/dashboard" class="logo">Grow Orgo🌿 <span style="font-size:12px; color:#444; letter-spacing:1px;">COMMAND</span></a>
+    <div class="header-actions">
+        <a href="/database" class="btn btn-edit" style="text-decoration:none;"><i class="fa-solid fa-server"></i> Explorer</a>
+        <a href="/logout" class="btn btn-danger" style="text-decoration:none;"><i class="fa-solid fa-power-off"></i></a>
+    </div>
+</header>
+
+<div class="container">
+    
+    <div class="section-box">
+        <h2><i class="fa-solid fa-plus-circle" style="color:var(--primary);"></i> Add New Harvest</h2>
+        <form method="POST" action="/add_product">
+            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:15px; margin-bottom:15px;">
+                <input type="text" name="name" placeholder="Product Name" required>
+                <input type="text" name="price" placeholder="Price (₹)" required>
+                <select name="category">
+                    <option value="grains">Grains</option>
+                    <option value="dairy">Dairy</option>
+                    <option value="fresh harvest">Fresh Harvest</option>
+                </select>
+            </div>
+            <textarea name="description" placeholder="Short description for customers..." style="width:100%; height:80px; margin-bottom:15px;" required></textarea>
+            <div style="display:flex; gap:15px;">
+                <input type="text" name="image" placeholder="Image URL (Unsplash/Static)" style="flex:1;">
+                <button type="button" onclick="confirmAddProduct()" class="btn btn-primary" style="flex:0.5;">Confirm Addition</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="section-box">
+        <h2><i class="fa-solid fa-truck-ramp-box" style="color:var(--primary);"></i> Shipping Command</h2>
+        <table>
+            <thead><tr><th>ID</th><th>Recipient</th><th>Live Status</th><th>Action</th></tr></thead>
+            <tbody>
+                {% for o in orders %}
+                <tr class="data-row">
+                    <td style="font-weight:800; color:#555;">#{{ o.id }}</td>
+                    <td><strong>{{ o.customer_name }}</strong><br><small style="color:#444;">{{ o.phone }}</small></td>
+                    <td><span style="color:var(--primary); font-weight:900;">{{ o.status }}</span></td>
+                    <td>
+                        <form id="status-{{ o.id }}" action="/update_status/{{ o.id }}" method="POST" style="display:flex; gap:10px;">
+                            <select name="status" id="select-{{ o.id }}" style="padding: 8px;">
+                                <option value="Order Placed" {% if o.status == 'Order Placed' %}selected{% endif %}>Placed</option>
+                                <option value="Shipped" {% if o.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                <option value="Delivered" {% if o.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                            </select>
+                            <button type="button" class="btn btn-primary" style="padding: 8px 15px;" onclick="confirmStatus('{{ o.id }}')">Update</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section-box">
+        <h2><i class="fa-solid fa-comments" style="color:#ffcc00;"></i> Customer Feedback</h2>
+        <table>
+            <thead><tr><th>User</th><th>Details</th><th>Photo</th><th>Action</th></tr></thead>
+            <tbody>
+                {% for r in reviews %}
+                <tr class="data-row">
+                    <td><strong>{{ r.username }}</strong><br><small style="color:#ffcc00;">{{ r.rating }} ★</small></td>
+                    <td style="max-width:300px; color:#888;">{{ r.comment }}</td>
+                    <td>{% if r.image_path %}<img src="{{ r.image_path }}" class="thumb">{% else %}-{% endif %}</td>
+                    <td><button class="btn btn-danger" onclick="confirmReviewDel('{{ r.id }}')"><i class="fa-solid fa-trash-can"></i></button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section-box">
+        <h2><i class="fa-solid fa-boxes-stacked" style="color:var(--primary);"></i> Current Inventory</h2>
+        <table>
+            <thead><tr><th>Preview</th><th>Product & Category</th><th>Price</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody>
+                {% for p in products %}
+                <tr class="data-row">
+                    <td><img src="{{ p.image }}" class="thumb"></td>
+                    <td><strong>{{ p.name }}</strong><br><span class="category-tag">{{ p.category }}</span></td>
+                    <td style="font-weight:900;">₹{{ p.price }}</td>
+                    <td style="text-align:right;">
+                        <button class="btn btn-edit" onclick="openEdit('{{ p.id }}', '{{ p.name }}', '{{ p.description }}', '{{ p.price }}', '{{ p.category }}', '{{ p.image }}')">Edit</button>
+                        <button class="btn btn-danger" onclick="confirmProdDel('{{ p.id }}', '{{ p.name }}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+// THE PERFECT EDIT POP-UP
+function openEdit(id, name, desc, price, cat, img) {
+    Swal.fire({
+        title: 'Edit Harvest Product',
+        background: '#0a0c0a', color: '#fff', width: '650px',
+        showCancelButton: true, confirmButtonColor: '#1b7a4b', confirmButtonText: 'Save Changes',
+        html: `
+            <div style="text-align:left; padding:10px 20px;">
+                <label style="font-size:10px; color:#555; text-transform:uppercase; font-weight:800;">Product Title</label>
+                <input id="en" class="swal2-input" value="${name}" style="background:#000; color:#fff; width:100%; border:1px solid #222; border-radius:12px; margin:10px 0;">
+                
+                <label style="font-size:10px; color:#555; text-transform:uppercase; font-weight:800;">Catalog Description</label>
+                <textarea id="ed" class="swal2-textarea" style="background:#000; color:#fff; width:100%; border:1px solid #222; border-radius:12px; height:100px; margin:10px 0;">${desc}</textarea>
+                
+                <div style="display:flex; gap:15px; margin:10px 0;">
+                    <div style="flex:1;">
+                        <label style="font-size:10px; color:#555; text-transform:uppercase; font-weight:800;">Price (₹)</label>
+                        <input id="ep" class="swal2-input" value="${price}" style="background:#000; color:#fff; width:100%; border:1px solid #222; border-radius:12px;">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:10px; color:#555; text-transform:uppercase; font-weight:800;">Category</label>
+                        <select id="ec" class="swal2-input" style="background:#000; color:#fff; width:100%; border:1px solid #222; border-radius:12px;">
+                            <option value="grains" ${cat==='grains'?'selected':''}>Grains</option>
+                            <option value="dairy" ${cat==='dairy'?'selected':''}>Dairy</option>
+                            <option value="fresh harvest" ${cat==='fresh harvest'?'selected':''}>Fresh Harvest</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <label style="font-size:10px; color:#555; text-transform:uppercase; font-weight:800;">Image URL</label>
+                <input id="ei" class="swal2-input" value="${img}" style="background:#000; color:#fff; width:100%; border:1px solid #222; border-radius:12px; margin:10px 0;">
+            </div>
+        `,
+ preConfirm: () => {
+    return Swal.fire({
+        title: 'Save Changes?',
+        text: 'Do you want to update this product?',
+        icon: 'question',
+        background: '#0a0c0a',
+        color: '#fff',
+        showCancelButton: true,
+        confirmButtonColor: '#1b7a4b'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const f = new FormData();
+            f.append('name', document.getElementById('en').value);
+            f.append('description', document.getElementById('ed').value);
+            f.append('price', document.getElementById('ep').value);
+            f.append('category', document.getElementById('ec').value);
+            f.append('image', document.getElementById('ei').value);
+
+            return fetch('/edit_product/' + id, { method: 'POST', body: f })
+                .then(() => location.reload());
+        }
+    });
+}
+    });
+}
+
+function confirmStatus(id) {
+    const s = document.getElementById('select-'+id).value;
+    Swal.fire({title:'Update Order?', text:'Set status to: '+s, icon:'question', showCancelButton:true, confirmButtonColor:'#1b7a4b'})
+    .then(r => { if(r.isConfirmed) document.getElementById('status-'+id).submit(); });
+}
+function confirmProdDel(id, name) { Swal.fire({title:'Delete '+name+'?', icon:'warning', showCancelButton:true, confirmButtonColor:'#c62828'}).then(r => { if(r.isConfirmed) location.href='/delete_product/'+id; }); }
+function confirmReviewDel(id) { Swal.fire({title:'Remove Review?', icon:'warning', showCancelButton:true, confirmButtonColor:'#c62828'}).then(r => { if(r.isConfirmed) location.href='/delete_review/'+id; }); }
+function confirmAddProduct() {
+
+    const form = document.querySelector('form[action="/add_product"]');
+
+    // ✅ Check if form is valid
+    if (!form.checkValidity()) {
+        form.reportValidity(); // shows browser validation
+        return;
+    }
+
+    // ✅ Only if valid → show popup
+    Swal.fire({
+        title: 'Add Product?',
+        text: 'This will be visible to customers',
+        icon: 'question',
+        background: '#0a0c0a',
+        color: '#fff',
+        showCancelButton: true,
+        confirmButtonColor: '#1b7a4b'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+</script>
+</body>
+</html>
